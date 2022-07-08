@@ -1,2 +1,2 @@
 # haskell-and-plutus
-solution to excises on Haskell 
+solution to exercises on Haskell 
