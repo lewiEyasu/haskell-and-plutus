@@ -476,9 +476,9 @@ propShortenWhile2 = shortenWhile (> 3) chain2 == chain1
 -- Reimplement the function 'build' from the slides.
 
 build :: Int -> Chain Int
-build x 
+build x
       | x > 0 = Block (build (x-1)) x
-      | otherwise = GenesisBlock  
+      | otherwise = GenesisBlock
 
 propBuild1 :: Bool
 propBuild1 = lengthChain (build 1000) == 1000
@@ -498,9 +498,9 @@ propBuild3 = build 3 == GenesisBlock |> 1 |> 2 |> 3
 -- genesis block.
 
 replicateChain :: Int -> txs -> Chain txs
-replicateChain x txs 
-               | x > 0 = Block (replicateChain (x-1) txs) txs  
-               | x <= 0 = GenesisBlock 
+replicateChain x txs
+               | x > 0 = Block (replicateChain (x-1) txs) txs
+               | x <= 0 = GenesisBlock
 propReplicateChain1 :: Bool
 propReplicateChain1 = replicateChain (-7) 'x' == GenesisBlock
 
@@ -518,8 +518,10 @@ propReplicateChain3 = replicateChain 3 'x' == GenesisBlock |> 'x' |> 'x' |> 'x'
 -- return the genesis block only.
 
 cutPrefix :: Int -> Chain txs -> Chain txs
-cutPrefix = error "TODO: implement cutPrefix"
-
+cutPrefix x txs@(Block c n)
+          |lengthChain txs > x = cutPrefix x c
+          | otherwise = txs 
+cutPrefix _ GenesisBlock = GenesisBlock          
 propCutPrefix1 :: Bool
 propCutPrefix1 = cutPrefix 1 chain2 == chain1
 
