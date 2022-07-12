@@ -498,8 +498,9 @@ propBuild3 = build 3 == GenesisBlock |> 1 |> 2 |> 3
 -- genesis block.
 
 replicateChain :: Int -> txs -> Chain txs
-replicateChain = error "TODO: implement replicateChain"
-
+replicateChain x txs 
+               | x > 0 = Block (replicateChain (x-1) txs) txs  
+               | x <= 0 = GenesisBlock 
 propReplicateChain1 :: Bool
 propReplicateChain1 = replicateChain (-7) 'x' == GenesisBlock
 
