@@ -351,7 +351,8 @@ propAllBlockProp3 = not (allBlockProp even chain3)
 -- If the given list is empty, return 0.
 
 maxChains :: [Chain txs] -> Int
-maxChains = error "TODO: implement maxChains"
+maxChains [] = 0
+maxChains a = maximum [lengthChain x | x <- a]
 
 propMaxChains1 :: Bool
 propMaxChains1 = maxChains [] == 0
