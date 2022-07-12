@@ -255,7 +255,7 @@ propAreCompatible7 = and [ propAreCompatible1
 -- Task Chains-8.
 --
 -- Given two chains, find the longest common prefix.
-commonPrefix :: Ord txs => Chain txs -> Chain txs -> Chain txs
+commonPrefix :: Eq txs => Chain txs -> Chain txs -> Chain txs
 commonPrefix _ GenesisBlock = GenesisBlock
 commonPrefix GenesisBlock _ = GenesisBlock
 commonPrefix a@(Block c1 n1) b = if a `isPrefixOf` b then a else commonPrefix c1 b 
@@ -367,7 +367,8 @@ propMaxChains2 = maxChains [chain1, chain2, chain3] == 3
 -- element plus a normal list.
 
 longestCommonPrefix :: Eq txs => Chain txs -> [Chain txs] -> Chain txs
-longestCommonPrefix = error "TODO: implement longestCommonPrefix"
+longestCommonPrefix x [] = x 
+longestCommonPrefix x (d:ds) = commonPrefix  x (longestCommonPrefix d ds)
 
 propLongestCommonPrefix1 :: Bool
 propLongestCommonPrefix1 = longestCommonPrefix chain4 [] == chain4
@@ -378,8 +379,158 @@ propLongestCommonPrefix2 = longestCommonPrefix chain2 [chain3] == chain1
 propLongestCommonPrefix3 :: Bool
 propLongestCommonPrefix3 = longestCommonPrefix chain6 [chain5, chain5] == chain5
 
+-- Task Chains-15.
+--
+-- Given an integer chain, interpret each integer as a change
+-- of the current balance. The genesis block has a balance of 0.
+-- The final balance is given by sumChain. Define a function
+-- that computes a chain of all the intermediate balances. The
+-- resulting chain should have the same length as the original
+-- chain, but each entry should be the intermediate balance of
+-- the original chain at that point.
+
+balancesChain :: Chain Int -> Chain Int
+balancesChain GenesisBlock  = GenesisBlock 
+balancesChain (Block GenesisBlock n) = Block GenesisBlock n 
+balancesChain x@(Block c@(Block c1 n2) n1) = Block (balancesChain c)  (sumChain x)
+
+propBalancesChain1 :: Bool
+propBalancesChain1 =
+  balancesChain chain1 == chain1
+
+propBalancesChain2 :: Bool
+propBalancesChain2 =
+  balancesChain chain2 == chain1 |> 6
+
+propBalancesChain3 :: Bool
+propBalancesChain3 =
+  balancesChain chain3 == chain1 |> 10 |> 13
+
+propBalancesChain4 :: Bool
+propBalancesChain4 =
+  balancesChain chain4 == chain1 |> 10 |> 14
+
 chain5 :: Chain Int
 chain5 = GenesisBlock |> 5 |> (-5)
 
 chain6 :: Chain Int
 chain6 = chain5 |> (-1) |> 3
+
+propBalancesChain5 :: Bool
+propBalancesChain5 =
+  balancesChain chain5 == GenesisBlock |> 5 |> 0
+
+propBalancesChain6 :: Bool
+propBalancesChain6 =
+  balancesChain chain6 == GenesisBlock |> 5 |> 0 |> (-1) |> 2
+
+propBalancesChain7 :: Bool
+propBalancesChain7 = and [ propBalancesChain1
+                         , propBalancesChain2
+                         , propBalancesChain3
+                         , propBalancesChain4
+                         , propBalancesChain5
+                         , propBalancesChain6
+                         ]
+
+-- Task Chains-16.
+--
+-- Given an integer chain, interpret it as a balances chain
+-- as in the previous task and check that none of the
+-- intermediate balances are negative.
+
+validBalancesChain :: Chain Int -> Bool
+validBalancesChain = error "TODO: implement validBalancesChain"
+
+propValidBalancesChain1 :: Bool
+propValidBalancesChain1 =
+  all validBalancesChain [chain1, chain2, chain3, chain4, chain5]
+
+propValidBalancesChain2 :: Bool
+propValidBalancesChain2 =
+  not (validBalancesChain chain6)
+
+propValidBalancesChain3 :: Bool
+propValidBalancesChain3 = and [ propValidBalancesChain1
+                              , propValidBalancesChain2
+                              ]
+
+-- Task Chains-17.
+--
+-- Drop blocks from the end of the chain as long as the
+-- transactions in the blocks fulfill the given property.
+-- Return the rest.
+
+shortenWhile :: (txs -> Bool) -> Chain txs -> Chain txs
+shortenWhile = error "TODO: implement shortenWhile"
+
+propShortenWhile1 :: Bool
+propShortenWhile1 = shortenWhile even chain2 == GenesisBlock
+
+propShortenWhile2 :: Bool
+propShortenWhile2 = shortenWhile (> 3) chain2 == chain1
+
+-- Task Chains-18.
+--
+-- Reimplement the function 'build' from the slides.
+
+build :: Int -> Chain Int
+build = error "TODO: implement build"
+
+propBuild1 :: Bool
+propBuild1 = lengthChain (build 1000) == 1000
+
+propBuild2 :: Bool
+propBuild2 = build (-5) == GenesisBlock
+
+propBuild3 :: Bool
+propBuild3 = build 3 == GenesisBlock |> 1 |> 2 |> 3
+
+-- Task Chains-19.
+--
+-- Produce a chain of given length that contains the
+-- given transactions in every block.
+--
+-- If the given length is zero or negative, return the
+-- genesis block.
+
+replicateChain :: Int -> txs -> Chain txs
+replicateChain = error "TODO: implement replicateChain"
+
+propReplicateChain1 :: Bool
+propReplicateChain1 = replicateChain (-7) 'x' == GenesisBlock
+
+propReplicateChain2 :: Bool
+propReplicateChain2 = replicateChain 1 2 == chain1
+
+propReplicateChain3 :: Bool
+propReplicateChain3 = replicateChain 3 'x' == GenesisBlock |> 'x' |> 'x' |> 'x'
+
+-- Task Chains-20.
+--
+-- Implement a function that gives you the prefix of the
+-- given length of the given chain. If the chain is too short,
+-- the entire chain is returned. If the given length is zero or negative,
+-- return the genesis block only.
+
+cutPrefix :: Int -> Chain txs -> Chain txs
+cutPrefix = error "TODO: implement cutPrefix"
+
+propCutPrefix1 :: Bool
+propCutPrefix1 = cutPrefix 1 chain2 == chain1
+
+propCutPrefix2 :: Bool
+propCutPrefix2 = cutPrefix 2 chain2 == chain2
+
+propCutPrefix3 :: Bool
+propCutPrefix3 = cutPrefix 0 chain3 == GenesisBlock
+
+propCutPrefix4 :: Bool
+propCutPrefix4 = cutPrefix (-7) chain1 == GenesisBlock
+
+propCutPrefix5 :: Bool
+propCutPrefix5 = and [ propCutPrefix1
+                     , propCommonPrefix2
+                     , propCommonPrefix3
+                     , propCommonPrefix4
+                     ]
