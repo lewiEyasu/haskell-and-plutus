@@ -78,7 +78,7 @@ propLengthChain5 =
 
 sumChain :: Chain Int -> Int
 sumChain GenesisBlock  = 0
-sumChain (Block c n)  = n + sumChain c 
+sumChain (Block c n)  = n + sumChain c
 
 propSumChain1 :: Bool
 propSumChain1 = sumChain chain1 == 2
@@ -108,7 +108,7 @@ maxChain :: Chain Int -> Int
 maxChain GenesisBlock = 0
 maxChain (Block c n)
                 | n > maxNum = n
-                | otherwise = maxChain c   
+                | otherwise = maxChain c
                 where maxNum = maxChain c
 
 propMaxChain :: Bool
@@ -122,7 +122,7 @@ propMaxChain =
 -- the first.
 
 longerChain :: Chain txs -> Chain txs -> Chain txs
-longerChain a b 
+longerChain a b
             | lengthChain a < lengthChain b = b
             | lengthChain a > lengthChain b = a
             | lengthChain a == lengthChain b = a
@@ -156,14 +156,14 @@ propLongerChain5 = and [ propLongerChain1
 validChain :: Chain Int -> Bool
 validChain GenesisBlock = True
 validChain (Block GenesisBlock _ ) = True
-validChain (Block c@(Block cs n2) n1) = n1 > n2 && validChain c 
+validChain (Block c@(Block cs n2) n1) = n1 > n2 && validChain c
 
 propValidChain1 :: Bool
 propValidChain1 = validChain GenesisBlock
 
 propValidChain2 :: Bool
 propValidChain2 =
-  map validChain chains == [True, True, False, False]                       
+  map validChain chains == [True, True, False, False]
 
 -- Task Chains-6.
 --
@@ -179,7 +179,7 @@ propValidChain2 =
 
 isPrefixOf :: Eq txs => Chain txs -> Chain txs -> Bool
 isPrefixOf GenesisBlock _ = True
-isPrefixOf  a c@(GenesisBlock) 
+isPrefixOf  a c@(GenesisBlock)
                     | a /= c = False
                     | otherwise = True
 
@@ -211,7 +211,7 @@ propIsPrefixOf6 = and [ propIsPrefixOf1
                       , propIsPrefixOf3
                       , propIsPrefixOf4
                       , propIsPrefixOf5
-                      ]  
+                      ]
 
 -- Task Chains-7.
 --
@@ -219,7 +219,7 @@ propIsPrefixOf6 = and [ propIsPrefixOf1
 -- other.
 
 areCompatible :: Eq txs => Chain txs -> Chain txs -> Bool
-areCompatible a b = isPrefixOf a b || isPrefixOf b a 
+areCompatible a b = isPrefixOf a b || isPrefixOf b a
 
 propAreCompatible1 :: Bool
 propAreCompatible1 = areCompatible chain1 chain2
@@ -251,14 +251,14 @@ propAreCompatible7 = and [ propAreCompatible1
                          , propAreCompatible5
                          , propAreCompatible6
                          ]
-                         
+
 -- Task Chains-8.
 --
 -- Given two chains, find the longest common prefix.
 commonPrefix :: Eq txs => Chain txs -> Chain txs -> Chain txs
 commonPrefix _ GenesisBlock = GenesisBlock
 commonPrefix GenesisBlock _ = GenesisBlock
-commonPrefix a@(Block c1 n1) b = if a `isPrefixOf` b then a else commonPrefix c1 b 
+commonPrefix a@(Block c1 n1) b = if a `isPrefixOf` b then a else commonPrefix c1 b
 
 propCommonPrefix2 :: Bool
 propCommonPrefix2 = commonPrefix chain2 chain1 == chain1
@@ -281,7 +281,7 @@ propCommonPrefix5 =
 
 hasBlockProp :: (txs -> Bool) -> Chain txs -> Bool
 hasBlockProp txs GenesisBlock = False
-hasBlockProp txs (Block c n) = txs n || hasBlockProp txs c 
+hasBlockProp txs (Block c n) = txs n || hasBlockProp txs c
 
 
 propHasBlockProp1 :: Bool
@@ -310,10 +310,10 @@ propHasBlock2 = not (hasBlock 8 chain5)
 
 uniqueBlocks :: Eq txs => Chain txs -> Bool
 uniqueBlocks GenesisBlock = True
-uniqueBlocks (Block c n) 
+uniqueBlocks (Block c n)
                     | not (hasBlock n c) && uniqueBlocks c = True
                     | otherwise  = False
-                where x = uniqueBlocks c       
+                where x = uniqueBlocks c
 
 propUniqueBlocks1 :: Bool
 propUniqueBlocks1 = uniqueBlocks (GenesisBlock :: Chain Int)
@@ -334,7 +334,7 @@ propUniqueBlocks4 = not (uniqueBlocks (Block chain2 2))
 
 allBlockProp :: (txs -> Bool) -> Chain txs -> Bool
 allBlockProp p GenesisBlock = True
-allBlockProp p (Block c n) = p n && allBlockProp p c  
+allBlockProp p (Block c n) = p n && allBlockProp p c
 
 propAllBlockProp1 :: Bool
 propAllBlockProp1 = allBlockProp (== 'x') GenesisBlock
@@ -367,7 +367,7 @@ propMaxChains2 = maxChains [chain1, chain2, chain3] == 3
 -- element plus a normal list.
 
 longestCommonPrefix :: Eq txs => Chain txs -> [Chain txs] -> Chain txs
-longestCommonPrefix x [] = x 
+longestCommonPrefix x [] = x
 longestCommonPrefix x (d:ds) = commonPrefix  x (longestCommonPrefix d ds)
 
 propLongestCommonPrefix1 :: Bool
@@ -390,8 +390,8 @@ propLongestCommonPrefix3 = longestCommonPrefix chain6 [chain5, chain5] == chain5
 -- the original chain at that point.
 
 balancesChain :: Chain Int -> Chain Int
-balancesChain GenesisBlock  = GenesisBlock 
-balancesChain (Block GenesisBlock n) = Block GenesisBlock n 
+balancesChain GenesisBlock  = GenesisBlock
+balancesChain (Block GenesisBlock n) = Block GenesisBlock n
 balancesChain x@(Block c@(Block c1 n2) n1) = Block (balancesChain c)  (sumChain x)
 
 propBalancesChain1 :: Bool
@@ -440,7 +440,7 @@ propBalancesChain7 = and [ propBalancesChain1
 -- intermediate balances are negative.
 
 validBalancesChain :: Chain Int -> Bool
-validBalancesChain = error "TODO: implement validBalancesChain"
+validBalancesChain c = allBlockProp (>= 0) (balancesChain c)
 
 propValidBalancesChain1 :: Bool
 propValidBalancesChain1 =
@@ -462,7 +462,8 @@ propValidBalancesChain3 = and [ propValidBalancesChain1
 -- Return the rest.
 
 shortenWhile :: (txs -> Bool) -> Chain txs -> Chain txs
-shortenWhile = error "TODO: implement shortenWhile"
+shortenWhile xs x@(Block c n) = if xs n then shortenWhile xs c  else x
+shortenWhile _ GenesisBlock   = GenesisBlock
 
 propShortenWhile1 :: Bool
 propShortenWhile1 = shortenWhile even chain2 == GenesisBlock
