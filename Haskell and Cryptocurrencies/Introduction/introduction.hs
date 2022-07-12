@@ -476,7 +476,9 @@ propShortenWhile2 = shortenWhile (> 3) chain2 == chain1
 -- Reimplement the function 'build' from the slides.
 
 build :: Int -> Chain Int
-build = error "TODO: implement build"
+build x 
+      | x > 0 = Block (build (x-1)) x
+      | otherwise = GenesisBlock  
 
 propBuild1 :: Bool
 propBuild1 = lengthChain (build 1000) == 1000
