@@ -1,9 +1,14 @@
 #!/bin/bash  
 git add .   
-echo "Add committ"  
+echo "Task Number"  
 # Take input without defining variable    
-read  
+read TASKNUMBER
+echo "File"
+# Take input without defining variable
+read FILENAME
+
+
 # Print the input value
-git commit -m " $REPLY"
+git commit -m "solve task $TASKNUMBER in Higher_order_functions $FILENAME"
 git push origin -u main
 

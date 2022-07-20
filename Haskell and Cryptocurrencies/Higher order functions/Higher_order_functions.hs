@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall -Wno-unused-imports #-}
 module HigherOrder where
 
-import Data.List (foldl')
+import Data.List (foldl', sortBy)
 import Prelude hiding (take, product, reverse)
 
 -- These are binary trees with labels in their nodes.
@@ -135,7 +135,7 @@ all' p = foldr (\x accu -> p x && accu)True
 -- list in descending rather than ascending order.
 
 sortDescending :: Ord a => [a] -> [a]
-sortDescending = error "TODO: define sortDescending"
+sortDescending  = reverse.sortBy compare
 
 -- Task HigherOrder-9.
 --
