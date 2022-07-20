@@ -73,7 +73,9 @@ instance Functor BinTree where
 -- is a binary search tree.
 
 isBST :: Ord a => BinTree a -> Bool
-isBST = error "TODO: define isBST"
+isBST (Bin c@(Bin _ x1 _) x d@(Bin _ x2 _)) = x > x1 && x < x2 && isBST c && isBST d
+isBST (Bin Empty x Empty) = True
+
 
 -- Task HigherOrder-5.
 --
