@@ -142,7 +142,7 @@ sortDescending  = reverse.sortBy compare
 -- Use 'insert' and 'foldr' to create a BST from a list.
 
 fromListBST :: Ord a => [a] -> BST a
-fromListBST = error "TODO: define fromListBST"
+fromListBST = foldr (\x accu -> insert x accu)Empty
 
 -- Task HigherOrder-10.
 --
