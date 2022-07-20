@@ -105,7 +105,11 @@ search _ Empty = False
 -- maintain the BST property itself.)
 
 insert :: Ord a => a -> BST a -> BST a
-insert = error "TODO: define insert"
+insert n b@(Bin l x r)
+         | n < x = Bin (insert n l) x r 
+         | n > x = Bin l x (insert n r) 
+         | n == x = b
+insert n Empty = Bin Empty n Empty 
 
 -- Task HigherOrder-7.
 --
