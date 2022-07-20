@@ -88,8 +88,15 @@ isBST (Bin Empty x Empty) = True
 type BST a = BinTree a
 
 search :: Ord a => a -> BST a -> Bool
-search = error "TODO: define search"
+search n x@(Bin c y d) 
+        | isBST x = check'
+        | otherwise = False
+      where check' 
+              | n == y = True
+              | n > y =  search n d
+              | n < y =  search n c
 
+search _ Empty = False              
 -- Task HigherOrder-6.
 --
 -- Define a function 'insert' that inserts a value into a BST
