@@ -118,11 +118,13 @@ insert n Empty = Bin Empty n Empty
 -- the module header. Provide the type signature yourself.
 
 -- |
+all' :: Foldable t => (a->Bool) -> t a -> Bool
+all' p = foldr (\x accu -> p x && accu)True
 -- >>> all even [2, 4 .. 20]
 -- True
 --
 -- >>> all odd [1, 1, 1, 2, 3, 3]
--- False
+-- FalseS
 --
 -- TODO: define all
 
