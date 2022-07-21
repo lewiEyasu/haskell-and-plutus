@@ -1,7 +1,11 @@
 {-# OPTIONS_GHC -Wall -Wno-unused-imports #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Avoid lambda" #-}
+{-# LANGUAGE RankNTypes #-}
 module HigherOrder where
 
-import Data.List (foldl', sortBy)
+import Data.List (foldl', sortBy, sort)
 import Prelude hiding (take, product, reverse)
 
 -- These are binary trees with labels in their nodes.
@@ -21,7 +25,7 @@ data BinTree a =
 -- 24
 --
 product :: Num a => [a] -> a
-product = foldr1 (\x accu -> x * accu)  
+product = foldr1 (\x accu -> x * accu)
 
 -- |
 -- >>> product [3, 11]
@@ -52,7 +56,7 @@ reverse = foldl (\accu x -> x:accu) []
 --
 mapBinTree :: (a -> b) -> BinTree a -> BinTree b
 mapBinTree p (Bin c x d) =  Bin (mapBinTree p c) (p x) (mapBinTree p d)
-mapBinTree _ Empty = Empty  
+mapBinTree _ Empty = Empty
 
 
 instance Functor BinTree where
@@ -88,15 +92,15 @@ isBST (Bin Empty x Empty) = True
 type BST a = BinTree a
 
 search :: Ord a => a -> BST a -> Bool
-search n x@(Bin c y d) 
+search n x@(Bin c y d)
         | isBST x = check'
         | otherwise = False
-      where check' 
+      where check'
               | n == y = True
               | n > y =  search n d
               | n < y =  search n c
 
-search _ Empty = False              
+search _ Empty = False
 -- Task HigherOrder-6.
 --
 -- Define a function 'insert' that inserts a value into a BST
@@ -106,10 +110,10 @@ search _ Empty = False
 
 insert :: Ord a => a -> BST a -> BST a
 insert n b@(Bin l x r)
-         | n < x = Bin (insert n l) x r 
-         | n > x = Bin l x (insert n r) 
+         | n < x = Bin (insert n l) x r
+         | n > x = Bin l x (insert n r)
          | n == x = b
-insert n Empty = Bin Empty n Empty 
+insert n Empty = Bin Empty n Empty
 
 -- Task HigherOrder-7.
 --
@@ -155,23 +159,43 @@ fromListBST = foldr (\x accu -> insert x accu)Empty
 
 -- |
 -- >>> labelTree $ Bin Empty 'x' (Bin Empty 'y' Empty)
--- Bin Empty ('x',1) (Bin Empty ('y',2) Empty)
+-- WAS Bin Empty ('x',1) (Bin Empty ('y',2) Empty)
+-- NOW Variable not in scope: labelTree :: BinTree Char -> t
 --
 -- >>> labelTree $ Bin (Bin Empty 1 Empty) 2 (Bin Empty 5 Empty)
--- Bin (Bin Empty (1,1) Empty) (2,2) (Bin Empty (5,3) Empty)
+-- WAS Bin (Bin Empty (1,1) Empty) (2,2) (Bin Empty (5,3) Empty)
+-- NOW Variable not in scope: labelTree :: BinTree a0 -> t
 --
-{-
-labelTree :: BinTree a -> BinTree (a, Int)
-labelTree ds = foldr (\x accu -> insert x accu)Empty xs
-            where xs = listBTS ds 
--}
+
+labelTree :: Ord a => BinTree a -> BinTree (a, Int) 
+labelTree d = foldr (\x accu -> insert' x accu)Empty  orderTuple
+
+           where list_of_BTS = listBTS d
+                 orderTuple = orderBTS (reverse list_of_BTS) (sort list_of_BTS)
+
+--orderBTS :: BinTree a -> [a]
+--orderBTS :: (Ord a, Num a) => [a] -> [a] -> [(a,Int)]
+orderBTS :: Eq a => [a] -> [a] -> [(a, Int)]
+orderBTS x y = [ (a,length (takeWhile ( /=a) y) + 1) | a <- x]
+
 listBTS :: BinTree a -> [a]
-listBTS (Bin l x r) =  listBTS l ++ x : listBTS r
-listBTS Empty = []  
+listBTS (Bin l x r) = [x] ++ listBTS l ++ listBTS r
+listBTS Empty = []
 
-create_tuples :: [a] -> [(a, Int)]
-create_tuples x = zipWith (\a b -> (a,b)) x [1..length (x)]
+--insert' ::  a => (a,b) -> BST (a,b) -> BST (a,b)
+insert' :: Ord a => (a, b) -> BinTree (a, b) -> BinTree (a, b)
+insert' n b@(Bin l d r)
+         | fst n < fst d = Bin (insert' n l) d r
+         | fst n > fst d = Bin l d (insert' n r)
+         | fst n == fst d = b
+insert' n Empty = Bin Empty n Empty
 
+
+{-
+
+create_tuples' :: [Int] -> BinTree a -> BinTree (a, Int)
+create_tuples' list (Bin l x r)  = create_tuples' list l  (length(takeWhile (++x) (list)), x) 
+-}
 -- Task HigherOrder-11.
 --
 -- Another form of tree labeling does not use an integer, but
@@ -250,3 +274,11 @@ foldrBinTree = error "TODO: implement foldrBinTree"
 instance Foldable BinTree where
   foldr = foldrBinTree
 -}
+data MagazineInfo = Magazine Int String [String]
+                    deriving (Show)
+show' (Magazine x _ _)  = x
+
+y' = Bin (Bin (Bin Empty 4 Empty) 5 (Bin Empty 6 Empty)) 7 (Bin (Bin Empty 8 Empty) 9 (Bin Empty 10 Empty))
+lewi :: Ord a => [a] -> [a] -> [(a,Int)]
+lewi x y = [ (a,length (takeWhile ( /=a) y) + 1) | a <- x]
+--[1,2,3,4] [2,3,4,1]
