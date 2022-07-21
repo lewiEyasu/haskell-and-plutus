@@ -160,8 +160,17 @@ fromListBST = foldr (\x accu -> insert x accu)Empty
 -- >>> labelTree $ Bin (Bin Empty 1 Empty) 2 (Bin Empty 5 Empty)
 -- Bin (Bin Empty (1,1) Empty) (2,2) (Bin Empty (5,3) Empty)
 --
+{-
 labelTree :: BinTree a -> BinTree (a, Int)
-labelTree = error "TODO: define labelTree"
+labelTree ds = foldr (\x accu -> insert x accu)Empty xs
+            where xs = listBTS ds 
+-}
+listBTS :: BinTree a -> [a]
+listBTS (Bin l x r) =  listBTS l ++ x : listBTS r
+listBTS Empty = []  
+
+create_tuples :: [a] -> [(a, Int)]
+create_tuples x = zipWith (\a b -> (a,b)) x [1..length (x)]
 
 -- Task HigherOrder-11.
 --

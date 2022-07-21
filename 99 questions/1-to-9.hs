@@ -56,7 +56,8 @@ pack _ = []
 
 -- Run-length encoding of a list. Use the result of problem P09 to implement the so-called run-length encoding data compression method. Consecutive duplicates of elements are encoded as lists (N E) where N is the number of duplicates of the element E.
 
---encode (x:xs) = (n,letter) :  encode ds
-  --   where n = length ([a | a <- x:xs, ])
-    --       letter = x
---take 2 $ drop 1 $ "abcd"
+encode :: Eq b => [b] -> [(Int, b)]
+encode d  =  encode' (pack d)
+          where encode' (x:xs) =  (length x, head x) : encode' xs
+                encode' [] = []
+          
