@@ -242,6 +242,10 @@ take _ []       = []
 take n (x : xs)
   | n > 0     = x : take (n - 1) xs
   | otherwise = []
+  
+take' :: Int -> [a] -> [a]
+take' n xs = foldr (\x accu -> if length accu < n then accu ++ [x] else accu) [] (reverse xs) 
+
 
 -- Task HigherOrder-14.
 --
