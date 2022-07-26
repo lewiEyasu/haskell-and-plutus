@@ -20,3 +20,13 @@ test' :: [b] -> [Int] -> [b]
 test' y = map (\x -> y !! (x-1))
 
 length_list num list = filter (\x -> (x `mod` num)  == 0) [1..length list]
+
+
+{-Exercise2Local maximaAlocal maximum
+of a list is an element of the list which is strictly greater than both the elements immediately before and after it.
+Forexample, in the list[2,3,4,1,5], the only local maximum is4, sinceit is greater than the elements immediately
+before and after it (3and1).5is not a local maximum since there is no element that comesafter it.-}
+
+localMaxima :: [Integer] -> [Integer]
+localMaxima (x:xs@(y:d:ds)) = if (y > x && y > d) then y : localMaxima xs else localMaxima xs
+localMaxima (_:_:[]) = []   
