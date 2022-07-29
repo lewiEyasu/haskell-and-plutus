@@ -21,7 +21,38 @@ class Expr a where
     mul :: a  -> a  -> a
 
 instance Expr ExprT where
-    lit x = Lit x 
+    lit = Lit
     add x1  x2 = Add x1  x2
     mul x1 x2 = Mul  x1  x2
    
+{- Exercise 4 -}
+
+instance Expr Integer where
+    lit  = id 
+    add x1  x2 = x1 + x2
+    mul x1 x2 = x1 * x2  
+
+instance Expr Bool where
+    lit x = x > 0  
+    add x1  x2 = x1 || x2
+    mul x1 x2 = x1 && x2
+
+newtype MinMax  = MinMax Integer deriving (Eq, Show)
+newtype Mod7    = Mod7 Integer deriving (Eq, Show)
+
+instance Expr MinMax where 
+    lit x = MinMax x  
+    add (MinMax x1)  (MinMax x2) = MinMax (max x1 x2 )
+    mul (MinMax x1)  (MinMax x2) = MinMax (min x1 x2 )
+
+instance Expr Mod7 where
+    lit x = Mod7 (x `mod` 7)
+    add (Mod7 x1) (Mod7 x2)  =Mod7 ((x1 `mod` 7) + (x2 `mod` 7))
+    mul (Mod7 x1) (Mod7 x2)  =Mod7 ((x1 `mod` 7) * (x2 `mod` 7)) 
+
+testExp :: Expr a => Maybe a
+testExp = parseExp lit add mul "(3 * -4) + 5"
+testInteger  = testExp :: Maybe Integer
+testBool     = testExp :: Maybe Bool
+testMM       = testExp :: Maybe MinMax
+testSat      = testExp :: Maybe Mod7
