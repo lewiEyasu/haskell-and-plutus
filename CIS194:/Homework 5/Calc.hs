@@ -1,5 +1,6 @@
 import ExprT
 import Parser
+import System.Posix.Internals (lstat)
 {-Exercise 1
 Write Version1of the calculator:an evaluator forExprT, with thesignature-}
 
@@ -15,12 +16,12 @@ evalStr x = case xs of (Just d) -> Just (eval d)
          where xs = parseExp Lit Add Mul x
 {- Exercise 3 -}
 class Expr a where
-    lit :: a -> Integer
-    add :: a  -> a  -> Integer
-    mul :: a  -> a  -> Integer
+    lit :: Integer -> a 
+    add :: a  -> a  -> a
+    mul :: a  -> a  -> a
 
 instance Expr ExprT where
-    lit Lisx =  x 
-    add x1  x2 = x1 + x2
-    mul x1 x2 = x1 * x2
+    lit x = Lit x 
+    add x1  x2 = Add x1  x2
+    mul x1 x2 = Mul  x1  x2
    
