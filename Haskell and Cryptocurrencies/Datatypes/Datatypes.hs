@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Datatypes where
 
 -- We hide functions we are going to redefine.
@@ -101,7 +102,8 @@ mapMaybe _ Nothing = Nothing
 -- Nothing
 --
 pairMaybe :: Maybe a -> Maybe b -> Maybe (a, b)
-pairMaybe = error "TODO: define pairMaybe"
+pairMaybe (Just x) (Just y)= Just (x,y)
+pairMaybe _ _ = Nothing 
 
 -- Task Datatypes-8.
 --
@@ -146,16 +148,20 @@ addMaybes = liftMaybe (+)
 -- GHCi infer the type of 'addMaybes'.
 --
 -- See if it works if you use the function with
--- fractional numbers.
+-- fractional numbers.2
 
 -- Task Datatypes-12.
 --
 -- Reimplement 'addMaybes' from the slides, this
 -- time using 'pairMaybe', 'uncurry', and
 -- 'mapMaybe'.
+uncurry' :: (a -> b -> c) -> (Maybe a, Maybe b) -> c
+uncurry' f (Just a, Just b) = f a b
 
-addMaybes' :: Maybe Int -> Maybe Int -> Maybe Int
-addMaybes' = error "TODO: define addMaybes'"
+--addMaybes' :: Maybe Int -> Maybe Int -> Maybe Int
+
+
+
 
 -- Task Datatypes-13.
 --
@@ -177,7 +183,7 @@ addMaybes' = error "TODO: define addMaybes'"
 -- (8,14)
 --
 split :: (a -> b) -> (a -> c) -> a -> (b, c)
-split = error "TODO: define split"
+split f p x = (f x, p x) 
 
 -- Task Datatypes-15.
 --
@@ -191,7 +197,9 @@ split = error "TODO: define split"
 -- "MongoliaHaskell"
 --
 (++) :: [a] -> [a] -> [a]
-(++) = error "TODO: define (++)"
+(++) (x:xs) d = x : (++) xs d
+(++) [] d = d
+
 
 -- Task Datatypes-16.
 --
@@ -207,14 +215,16 @@ split = error "TODO: define split"
 -- True
 --
 or :: [Bool] -> Bool
-or = error "TODO: define or"
+or (x:xs) = if x == True then True else or xs
+or [] = False 
 
 -- Task Datatypes-17.
 --
 -- Reimplement the function 'reverse' from the slides.
 
 reverse :: [a] -> [a]
-reverse = error "TODO: define reverse"
+reverse (x:xs) = reverse xs ++ [x] 
+reverse [] = []
 
 -- Task Datatypes-18.
 --
