@@ -5,6 +5,7 @@ module Set6 where
 import Todo
 import Data.Char (toLower)
 
+
 -- Ex 1: define an Eq instance for the type Country below. You'll need
 -- to use pattern matching.
 
@@ -16,6 +17,9 @@ instance Eq Country where
   Switzerland == Switzerland = True
   Norway == Norway = True  
   _ == _ = False
+
+--- test ex-1---
+
 ------------------------------------------------------------------------------
 -- Ex 2: implement an Ord instance for Country so that
 --   Finland <= Norway <= Switzerland
@@ -23,18 +27,14 @@ instance Eq Country where
 -- Remember minimal complete definitions!
 
 instance Ord Country where
-  compare Finland Switzerland = LT
-  compare Switzerland Norway = LT -- implement me?
-  compare Finland Norway = LT
-  (<=) Finland Switzerland  = True
-  (<=) Switzerland Norway = True
+
+  (<=) Finland Norway   = True
+  (<=) Norway Switzerland = True
+  (<=) Finland Switzerland = True
   (<=) _ _  = False -- and me?
 
-  min Finland Switzerland = Finland -- and me? 
-  min Switzerland Norway = Switzerland -- and me?
   
-  max Finland Switzerland = Switzerland
-  max Switzerland Norway = Norway
+
 ------------------------------------------------------------------------------
 -- Ex 3: Implement an Eq instance for the type Name which contains a String.
 -- The Eq instance should ignore capitalization.
@@ -49,7 +49,7 @@ data Name = Name String
   deriving Show
 
 instance Eq Name where
-  (==) = todo
+   (Name a) == (Name b) = fmap toLower a == fmap toLower b
 
 ------------------------------------------------------------------------------
 -- Ex 4: here is a list type parameterized over the type it contains.
