@@ -125,6 +125,13 @@ instance (Price a) => Price (Maybe a) where
 data Number = Finite Integer | Infinite
   deriving (Show,Eq)
 
+instance Ord Number where
+  compare (Finite x) (Finite y) = compare x y
+  compare Infinite Infinite = EQ 
+  compare Infinite _ = GT
+  compare  _ Infinite = LT
+  
+
 
 ------------------------------------------------------------------------------
 -- Ex 8: rational numbers have a numerator and a denominator that are
