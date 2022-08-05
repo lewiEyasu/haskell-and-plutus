@@ -63,7 +63,9 @@ data List a = Empty | LNode a (List a)
   deriving Show
 
 instance Eq a => Eq (List a) where
-  (==) = todo
+  (LNode x xs ) == (LNode d ds) = x == d && xs == ds
+  Empty == Empty = True 
+  _ == _ = False
 
 ------------------------------------------------------------------------------
 -- Ex 5: below you'll find two datatypes, Egg and Milk. Implement a
@@ -80,8 +82,19 @@ instance Eq a => Eq (List a) where
 
 data Egg = ChickenEgg | ChocolateEgg
   deriving Show
-data Milk = Milk Int -- amount in litres
+
+newtype Milk = Milk Int -- amount in litres
   deriving Show
+
+class Price a where
+  price :: a -> Int
+
+instance Price Egg where
+  price ChickenEgg = 20
+  price ChocolateEgg = 30
+
+instance Price Milk where  
+  price (Milk a) = a * 15   
 
 
 ------------------------------------------------------------------------------
@@ -92,6 +105,10 @@ data Milk = Milk Int -- amount in litres
 -- price [Milk 1, Milk 2]  ==> 45
 -- price [Just ChocolateEgg, Nothing, Just ChickenEgg]  ==> 50
 -- price [Nothing, Nothing, Just (Milk 1), Just (Milk 2)]  ==> 45
+instance (Price a) => Price  [a]  where
+  price xs = foldl (\accu x -> accu + price x ) 0 xs
+
+instance (Price Maybe(a)) => Price [Maybe a]
 
 
 ------------------------------------------------------------------------------
