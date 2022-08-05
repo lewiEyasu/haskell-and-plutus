@@ -106,14 +106,14 @@ instance Price Milk where
 -- price [Milk 1, Milk 2]  ==> 45
 -- price [Just ChocolateEgg, Nothing, Just ChickenEgg]  ==> 50
 -- price [Nothing, Nothing, Just (Milk 1), Just (Milk 2)]  ==> 45
-{-
+
 instance (Price a) => Price  [a]  where
   price xs = foldl (\accu x -> accu + price x ) 0 xs
--}
-instance (Price a) => Price [Maybe a] where
-  price xs = foldl (\accu x -> case x of
-                                    Just a -> price a + accu
-                                    Nothing -> accu )0 xs
+
+
+instance (Price a) => Price (Maybe a) where
+  price (Just x) = price x 
+  price Nothing = 0
 
 ------------------------------------------------------------------------------
 -- Ex 7: below you'll find the datatype Number, which is either an
