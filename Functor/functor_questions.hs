@@ -20,4 +20,3 @@ instance Functor BinarySearchTree where
 toUpperString :: String -> String
 
 toUpperString = fmap (\x -> chr (65 + (ord x - 97))) 
-
