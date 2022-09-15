@@ -37,8 +37,8 @@ import           Wallet.Emulator.Wallet
 {- on-chain code -}
 
 {-# INLINABLE mkPolicy #-}
-mkPolicy :: PaymentPubKeyHash -> () -> ScriptContext -> Bool
-mkPolicy pkh' () ctx = if isActionMinting then
+mkPolicy :: PaymentPubKeyHash -> TokenName ->() -> ScriptContext -> Bool
+mkPolicy pkh' tn () ctx = if isActionMinting then
                           isValidPubKeyHash
                           else True 
                 
@@ -50,7 +50,7 @@ mkPolicy pkh' () ctx = if isActionMinting then
 
         isActionMinting :: Bool
         isActionMinting  = case flattenValue (txInfoMint info) of
-            [(_, _, amt)]   -> amt > 0
+            [(_, tn, amt)]   -> amt > 0
        
         isValidPubKeyHash :: Bool
         isValidPubKeyHash = txSignedBy (scriptContextTxInfo ctx) $ unPaymentPubKeyHash pkh'
@@ -58,14 +58,16 @@ mkPolicy pkh' () ctx = if isActionMinting then
 
 {- off-chain code -} 
 
-policy :: PaymentPubKeyHash ->  Scripts.MintingPolicy
-policy pkh = mkMintingPolicyScript $
-    $$(PlutusTx.compile [|| Scripts.wrapMintingPolicy . mkPolicy ||])
+policy :: PaymentPubKeyHash -> TokenName ->  Scripts.MintingPolicy
+policy pkh tn = mkMintingPolicyScript $
+    $$(PlutusTx.compile [|| \pkh' tn' -> Scripts.wrapMintingPolicy $ mkPolicy pkh' tn' ||])
     `PlutusTx.applyCode`
     PlutusTx.liftCode pkh
+    `PlutusTx.applyCode`
+    PlutusTx.liftCode tn
 
-curSymbol ::  PaymentPubKeyHash -> CurrencySymbol
-curSymbol = scriptCurrencySymbol . policy
+curSymbol ::  PaymentPubKeyHash -> TokenName -> CurrencySymbol
+curSymbol pkh tn = scriptCurrencySymbol $ policy pkh tn
 
 data MintParams = MintParams
     { mpTokenName :: !TokenName
@@ -81,8 +83,8 @@ pkh = PaymentPubKeyHash ("80a4f45b56b88d1139da23bc4c3c75ec6d32943c087f250b86193c
 mint :: MintParams -> Contract w FreeSchema Text ()
 mint mp = do
     pkh' <- Contract.ownPaymentPubKeyHash
-    let val     = Value.singleton (curSymbol pkh) (mpTokenName mp) (mpAmount mp)
-        lookups = Constraints.mintingPolicy $ policy pkh
+    let val     = Value.singleton (curSymbol pkh (mpTokenName mp)) (mpTokenName mp) (mpAmount mp)
+        lookups = Constraints.mintingPolicy $ policy pkh (mpTokenName mp)
         tx      = Constraints.mustMintValue val
     ledgerTx <- submitTxConstraintsWith @Void lookups tx
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
